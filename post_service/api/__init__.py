@@ -1,0 +1,3 @@
+from flask import Blueprint
+
+api = Blueprint('api', __name__, uri_prefix='/api')
