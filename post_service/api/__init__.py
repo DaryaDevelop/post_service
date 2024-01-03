@@ -1,3 +1,5 @@
 from flask import Blueprint
 
-api = Blueprint('api', __name__, uri_prefix='/api')
+api = Blueprint('api', __name__, url_prefix='/api')
+
+from .profile import posts
