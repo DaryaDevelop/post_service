@@ -4,12 +4,12 @@ import requests
 from flask import request
 
 from post_service.api import api
-from post_service.api.profile.utils import is_owner
+from post_service.api.profile.utils import is_owner_comment
 
 
-@api.get("/posts")
-def get_all_posts():
-    responce = requests.get(f"http://{os.getenv('DB_SERVICE_HOST')}:{os.getenv('DB_SERVICE_PORT')}/posts")
+@api.get("/comments/<int:id>")
+def get_comments(id):
+    responce = requests.get(f"http://{os.getenv('DB_SERVICE_HOST')}:{os.getenv('DB_SERVICE_PORT')}/comments/{id}")
     return {
         "status": responce.json()["status"],
         "description": responce.json()["description"],
@@ -17,17 +17,16 @@ def get_all_posts():
     }, responce.status_code
 
 
-@api.post("/posts")
-def create_new_posts():
-    title = request.json.get("title")
+@api.post("/comments/<int:id>")
+def new_comment(id):
     body = request.json.get("body")
-    if not title or not body:
+    if not body:
         return {
             "status": 1,
             "description": "No such data in request",
             "data": {}
         }, 400
-    responce = requests.post(f"http://{os.getenv('DB_SERVICE_HOST')}:{os.getenv('DB_SERVICE_PORT')}/posts",
+    responce = requests.post(f"http://{os.getenv('DB_SERVICE_HOST')}:{os.getenv('DB_SERVICE_PORT')}/comments/{id}",
                              json=request.json,
                              headers={"Content-Type": "application/json", "Token": request.headers.get("Token")})
     return {
@@ -37,11 +36,12 @@ def create_new_posts():
     }, responce.status_code
 
 
-@api.put("/posts/<int:id>")
-@is_owner
-def update_posts(id):
-    responce = requests.put(f"http://{os.getenv('DB_SERVICE_HOST')}:{os.getenv('DB_SERVICE_PORT')}/posts/{id}",
-                            json=request.json, headers={"Content-Type": "application/json"})
+@api.put("/comments/<int:id>")
+@is_owner_comment
+def update_comment(id):
+    responce = requests.put(f"http://{os.getenv('DB_SERVICE_HOST')}:{os.getenv('DB_SERVICE_PORT')}/comments/{id}",
+                            json=request.json,
+                            headers={"Content-Type": "application/json"})
     return {
         "status": responce.json()["status"],
         "description": responce.json()["description"],
@@ -49,11 +49,12 @@ def update_posts(id):
     }, responce.status_code
 
 
-@api.delete("/posts/<int:id>")
-@is_owner
-def delete_posts(id):
-    responce = requests.delete(f"http://{os.getenv('DB_SERVICE_HOST')}:{os.getenv('DB_SERVICE_PORT')}/posts/{id}",
-                               json=request.json, headers={"Content-Type": "application/json"})
+@api.delete("/comments/<int:id>")
+@is_owner_comment
+def delete_comment(id):
+    responce = requests.delete(f"http://{os.getenv('DB_SERVICE_HOST')}:{os.getenv('DB_SERVICE_PORT')}/comments/{id}",
+                               json=request.json,
+                               headers={"Content-Type": "application/json"})
     return {
         "status": responce.json()["status"],
         "description": responce.json()["description"],
